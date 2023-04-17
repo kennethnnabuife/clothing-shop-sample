@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 
 const NavBar = () => {
   const dispatch = useDispatch();
-  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
-  const user = useSelector((state) => state.auth.user);
+  const cartTotalQuantity = useSelector(
+    (state) => state.cart.cartTotalQuantity
+  );
+  const email = useSelector((state) => state.auth.email);
 
   return (
     <header className="nav-bar">
@@ -30,14 +32,15 @@ const NavBar = () => {
           </div>
         </div>
       </Link>
-      {user? (
+      {email ? (
         <div
           onClick={() => {
             dispatch(logoutUser());
             toast.warning("Logged out!", { position: "bottom-left" });
           }}
-          className="loginlogout">Welcome back!
-          {" "}
+          className="loginlogout"
+        >
+          Welcome back!{" "}
           <Link to="/login" className="logout">
             Logout
           </Link>

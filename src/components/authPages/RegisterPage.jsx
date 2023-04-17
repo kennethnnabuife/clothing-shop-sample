@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../features/authSlice";
 
 const RegistrationForm = () => {
-  const registerStatus = useSelector((state) => state.auth.registerStatus);
+  const registerSuccess = useSelector((state) => state.auth.registerSuccess);
+  const registerError = useSelector((state) => state.auth.registerError);
+  const registerLoading = useSelector((state) => state.auth.registerLoading);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ const RegistrationForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [Error, setError] = useState("");
+  const [error, setError] = useState("");
 
   const userData = {
     username,
@@ -35,10 +37,10 @@ const RegistrationForm = () => {
   };
 
   useEffect(() => {
-    if (registerStatus === "succeeded") {
+    if (registerSuccess === true) {
       navigate("/cart");
     }
-  }, [registerStatus, navigate]);
+  }, [registerSuccess, navigate]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -92,11 +94,11 @@ const RegistrationForm = () => {
           required
         />
       </div>
-      <button type="submit" disabled={registerStatus === "loading"}>
-        {registerStatus === "loading" ? "Loading..." : "Register"}
+      <button type="submit" disabled={registerLoading === true}>
+        {registerLoading === true ? "Loading..." : "Register"}
       </button>
-      {registerStatus === "failed" && <div>Invalid account</div>}
-      <div>{Error}</div>
+      {registerError === true && <div>Invalid account</div>}
+      <div>{error}</div>
     </form>
   );
 };

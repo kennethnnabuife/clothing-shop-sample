@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 const Cart = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const user = useSelector((state) => state.auth.user);
+  const email = useSelector((state) => state.auth.email);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
 
   const dispatch = useDispatch();
@@ -57,32 +57,38 @@ const Cart = () => {
           </div>
           <div className="cart-items">
             {cartItems.map((currentCartItem) => (
-                <div className="cart-item" key={currentCartItem.id}>
-                  <div className="cart-product">
-                    <img src={currentCartItem.image} alt={currentCartItem.name} />
-                    <div className="product-desc">
-                      <h3>{currentCartItem.name}</h3>
-                      <p>{currentCartItem.desc}</p>
-                      <button onClick={() => dispatch(removeProduct(currentCartItem))}>
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                  <div className="cart-product-price">${currentCartItem.price}</div>
-                  <div className="cart-product-quantity">
-                    <button onClick={() => dispatch(removeFromCart(currentCartItem))}>
-                      -
+              <div className="cart-item" key={currentCartItem.id}>
+                <div className="cart-product">
+                  <img src={currentCartItem.image} alt={currentCartItem.name} />
+                  <div className="product-desc">
+                    <h3>{currentCartItem.name}</h3>
+                    <p>{currentCartItem.desc}</p>
+                    <button
+                      onClick={() => dispatch(removeProduct(currentCartItem))}
+                    >
+                      Remove
                     </button>
-                    <div className="count">{currentCartItem.cartQuantity}</div>
-                    <button onClick={() => dispatch(addToCart(currentCartItem))}>
-                      +
-                    </button>
-                  </div>
-                  <div className="cart-product-total-price">
-                    ${currentCartItem.price * currentCartItem.cartQuantity}
                   </div>
                 </div>
-              ))}
+                <div className="cart-product-price">
+                  ${currentCartItem.price}
+                </div>
+                <div className="cart-product-quantity">
+                  <button
+                    onClick={() => dispatch(removeFromCart(currentCartItem))}
+                  >
+                    -
+                  </button>
+                  <div className="count">{currentCartItem.cartQuantity}</div>
+                  <button onClick={() => dispatch(addToCart(currentCartItem))}>
+                    +
+                  </button>
+                </div>
+                <div className="cart-product-total-price">
+                  ${currentCartItem.price * currentCartItem.cartQuantity}
+                </div>
+              </div>
+            ))}
           </div>
           <div className="cart-summary">
             <button className="clear-btn" onClick={() => dispatch(clearCart())}>
@@ -94,7 +100,7 @@ const Cart = () => {
                 <span className="amount">${cartTotalAmount}</span>
               </div>
               <p>Taxes and shipping calculated at checkout</p>
-              {user ? (
+              {email ? (
                 <button>Check out</button>
               ) : (
                 <button

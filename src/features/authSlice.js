@@ -1,68 +1,116 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import jwtDecode from "jwt-decode";
 
+// Define your async thunks for registering and logging in users
 export const registerUser = createAsyncThunk(
-  "registration/registerUser",
-  async (userData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/register",
-      userData
-    );
-    return response.data;
+  "auth/registerUser",
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/register",
+        userData
+      );
+      return response.data;
+    } catch (error) {
+      // Extract the error message from the server-side response and pass it as part of the action payload
+      return thunkAPI.rejectWithValue(
+        error.response.data || "An error occurred"
+      );
+    }
   }
 );
 
 export const loginUser = createAsyncThunk(
-  "login/loginUser",
-  async (userCheck) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/login",
-      userCheck
-    );
-    return response.data;
+  "auth/loginUser",
+  async (userCheck, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/login",
+        userCheck
+      );
+      return response.data;
+    } catch (error) {
+      // Extract the error message from the server-side response and pass it as part of the action payload
+      return thunkAPI.rejectWithValue(
+        error.response.data || "An error occurred"
+      );
+    }
   }
 );
 
+// Define the initial state for your auth slice
 const initialState = {
-  user: null,
-  registerStatus: null,
-  loginStatus: null,
+  token: null,
+  email: null,
+  registerLoading: false,
+  registerSuccess: false,
+  registerError: null,
+  loginLoading: false,
+  loginSuccess: false,
+  loginError: null,
 };
 
+// Define your auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     logoutUser: (state) => {
-      state.user = null;
-      state.registerStatus = null;
-      state.loginStatus = null;
+      state.token = null;
+      state.email = null;
+      state.registerLoading = false;
+      state.registerSuccess = false;
+      state.registerError = null;
+      state.loginLoading = false;
+      state.loginSuccess = false;
+      state.loginError = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.pending, (state) => {
-        state.registerStatus = "loading";
+        state.registerSuccess = false;
+        state.registerError = null;
+        state.registerLoading = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.registerStatus = "succeeded";
+        state.registerLoading = false;
+        state.registerError = null;
+        state.registerSuccess = true;
+        state.token = action.payload;
+        const decodedUser = jwtDecode(state.token);
+        state.email = decodedUser.email;
       })
-      .addCase(registerUser.rejected, (state) => {
-        state.registerStatus = "failed";
+      .addCase(registerUser.rejected, (state, action) => {
+        // Store the error message in the state
+        state.registerLoading = false;
+        state.registerSuccess = false;
+        state.registerError = action.payload.error;
       })
 
       .addCase(loginUser.pending, (state) => {
-        state.loginStatus = "loading";
+        state.loginSuccess = false;
+        state.loginError = null;
+        state.loginLoading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.loginStatus = "succeeded";
+        state.loginLoading = false;
+        state.loginError = null;
+        state.loginSuccess = true;
+        state.token = action.payload;
+        const decodedUser = jwtDecode(state.token);
+        state.email = decodedUser.email;
       })
-      .addCase(loginUser.rejected, (state) => {
-        state.loginStatus = "failed";
+      .addCase(loginUser.rejected, (state, action) => {
+        // Store the error message in the state
+        state.loginLoading = false;
+        state.loginSuccess = false;
+        state.loginError = action.payload;
       });
   },
 });
+
+// Export the auth slice reducer and actions
 export const { logoutUser } = authSlice.actions;
 export default authSlice.reducer;

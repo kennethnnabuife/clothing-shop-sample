@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../features/authSlice";
 
 const LoginForm = () => {
-  const loginStatus = useSelector((state) => state.auth.loginStatus);
+  const decodedEmail = useSelector((state) => state.auth.email);
+  const loginError = useSelector((state) => state.auth.loginError);
+  const loginLoading = useSelector((state) => state.auth.loginLoading);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,10 +21,10 @@ const LoginForm = () => {
   };
 
   useEffect(() => {
-    if (loginStatus === "succeeded") {
+    if (decodedEmail) {
       navigate("/cart");
     }
-  }, [loginStatus, navigate]);
+  }, [decodedEmail, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +36,11 @@ const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <label>
           Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </label>
         <label>
           Password:
@@ -46,10 +52,10 @@ const LoginForm = () => {
         </label>
         <button type="submit">Log In</button>
       </form>
-      {loginStatus === "loading" ? (
+      {loginLoading === true ? (
         <div>loading</div>
-      ) : loginStatus === "failed" ? (
-        <div>Wrong email or password!</div>
+      ) : loginError ? (
+        <div>{loginError}</div>
       ) : (
         <div>Enter your details!</div>
       )}

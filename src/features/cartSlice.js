@@ -5,7 +5,9 @@ const initialState = {
   cartItems: localStorage.getItem("cartItems")
     ? JSON.parse(localStorage.getItem("cartItems"))
     : [],
-  cartTotalQuantity: 0,
+  cartTotalQuantity: localStorage.getItem("cartTotalQuantity")
+    ? JSON.parse(localStorage.getItem("cartTotalQuantity"))
+    : 0,
   cartTotalAmount: 0,
 };
 
@@ -83,6 +85,10 @@ const cartSlice = createSlice({
       );
       state.cartTotalQuantity = totalQuantity;
       state.cartTotalAmount = parseFloat(totalAmount.toFixed(2));
+      localStorage.setItem(
+        "cartTotalQuantity",
+        JSON.stringify(state.cartTotalQuantity)
+      );
     },
 
     clearCart(state) {
@@ -90,6 +96,7 @@ const cartSlice = createSlice({
       state.cartTotalQuantity = 0;
       state.cartTotalAmount = 0;
       localStorage.removeItem("cartItems");
+      localStorage.removeItem("cartTotalQuantity");
       toast.info("Cart cleared", {
         position: "bottom-left",
       });
