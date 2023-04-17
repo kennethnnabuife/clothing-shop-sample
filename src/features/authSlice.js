@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-// Define your async thunks for registering and logging in users
+// Async thunks for registering and logging in users
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, thunkAPI) => {
@@ -39,7 +39,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Define the initial state for your auth slice
+// Define the initial state for auth slice
 const initialState = {
   token: null,
   email: null,
@@ -51,7 +51,7 @@ const initialState = {
   loginError: null,
 };
 
-// Define your auth slice
+// auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -86,7 +86,7 @@ const authSlice = createSlice({
         // Store the error message in the state
         state.registerLoading = false;
         state.registerSuccess = false;
-        state.registerError = action.payload.error;
+        state.registerError = action.payload;
       })
 
       .addCase(loginUser.pending, (state) => {
